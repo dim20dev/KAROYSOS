@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Karousos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6f2ff;
+      color: #003366;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      text-decoration: solid;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .active {
+      display: block;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #007bff;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #007bff;
+      padding: 15px;
+      font-size: 16px;
+    }
+
+    th {
+      background-color: #cce5ff;
+    }
+
+    .nav {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>KAROUSOS</h1>
+  </header>
+
+  <div class="container">
+
+    <div id="form-page" class="page active">
+      <h2>Καινούρια παραλαβή</h2>
+      <form id="ingredient-form">
+        <label for="item">Προϊόν</label>
+        <input type="text" id="item" required>
+
+        <label for="origin">Κωδικός</label>
+        <input type="text" id="origin" required>
+
+        <label for="date">Ημερομηνία παραλαβής</label>
+        <input type="date" id="date" required>
+
+        <label for="notes">Άλλες Πληροφορίες</label>
+        <textarea id="notes" rows="3"></textarea>
+
+        <button type="submit">Πρόσθεση παραλαβής</button>
+      </form>
+      <div class="nav">
+        <button onclick="goToPage('table-page')">Παραλαβές</button>
+      </div>
+    </div>
+
+    <!-- PAGE 2: TABLE -->
+    <div id="table-page" class="page">
+      <h2>Παραλαβές</h2>
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>Προϊόν</th>
+            <th>Κωδικός</th>
+            <th>ημερομηνία παραλαβής</th>
+            <th>Άλλες πληροφορίες</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rows inserted here -->
+        </tbody>
+      </table>
+      <div class="nav">
+        <button onclick="goToPage('form-page')">Back to Form</button>
+        <button onclick="exportToExcel()">Export to Excel</button>
+        <button onclick="exportToWord()">Export to Word</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Export Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://unpkg.com/docx@8.1.1/build/index.umd.js"></script>
+
+  <script>
+    const form = document.getElementById('ingredient-form');
+    const tableBody = document.querySelector('#data-table tbody');
+
+    function goToPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const item = document.getElementById('item').value;
+      const origin = document.getElementById('origin').value;
+      const date = document.getElementById('date').value;
+      const notes = document.getElementById('notes').value;
+
+      const entry = { item, origin, date, notes };
+      addRowToTable(entry);
+      saveToLocalStorage(); // ✅ Save to local storage
+      form.reset();
+    });
+
+    function addRowToTable(entry) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${entry.item}</td>
+        <td>${entry.origin}</td>
+        <td>${entry.date}</td>
+        <td>${entry.notes}</td>
+      `;
+      tableBody.appendChild(row);
+    }
+
+    function saveToLocalStorage() {
+      const rows = Array.from(tableBody.querySelectorAll('tr')).map(row => {
+        const cells = row.querySelectorAll('td');
+        return {
+          item: cells[0].innerText,
+          origin: cells[1].innerText,
+          date: cells[2].innerText,
+          notes: cells[3].innerText
+        };
+      });
+      localStorage.setItem('ingredientData', JSON.stringify(rows));
+    }
+
+    function loadFromLocalStorage() {
+      const data = JSON.parse(localStorage.getItem('ingredientData')) || [];
+      data.forEach(entry => addRowToTable(entry));
+    }
+
+    window.addEventListener('load', loadFromLocalStorage); // ✅ Load saved entries on page load
+
+    function exportToExcel() {
+      const workbook = XLSX.utils.table_to_book(document.getElementById('data-table'));
+      XLSX.writeFile(workbook, 'ingredients.xlsx');
+    }
+
+    function exportToWord() {
+      const { Document, Packer, Paragraph, Table, TableRow, TableCell } = window.docx;
+      const rows = Array.from(document.querySelectorAll('#data-table tr'));
+
+      const docRows = rows.map(row => {
+        const cells = Array.from(row.cells).map(cell =>
+          new TableCell({ children: [new Paragraph(cell.innerText)] })
+        );
+        return new TableRow({ children: cells });
+      });
+
+      const doc = new Document({
+        sections: [{
+          children: [
+            new Paragraph("Ingredient Log"),
+            new Table({ rows: docRows })
+          ]
+        }]
+      });
+
+      Packer.toBlob(doc).then(blob => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'ingredients.docx';
+        link.click();
+      });
+    }
+  </script>
+
+</body>
+</html>
