@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="el">
 <head>
@@ -14,6 +13,7 @@
 
 <div class="container">
 
+<!-- LOGIN -->
 <div id="loginPage" class="card active">
 <h2>Login</h2>
 <input id="loginEmail" placeholder="Email">
@@ -21,6 +21,7 @@
 <button onclick="login()">Είσοδος</button>
 </div>
 
+<!-- DASHBOARD -->
 <div id="dashboard" class="page card">
 <h2>Dashboard</h2>
 <button onclick="openModule('products')">Προϊόντα</button>
@@ -28,47 +29,64 @@
 <button onclick="openModule('orders')">Παραγγελίες</button>
 <button onclick="openModule('prices')">Τιμές Προμηθευτών</button>
 <button onclick="openModule('users')">Χρήστες</button>
-<button onclick="exportPDF()">Export PDF</button>
 <button onclick="logout()">Logout</button>
 <div id="alerts"></div>
 </div>
 
+<!-- PRODUCTS -->
 <div id="products" class="page card">
 <h2>Προϊόντα</h2>
 <input id="pName" placeholder="Όνομα">
-<input id="pUnit" placeholder="Μονάδα">
 <input id="pStock" placeholder="Stock">
 <input id="pMin" placeholder="Low stock alert">
 <button onclick="addProduct()">Αποθήκευση</button>
-<table id="productsTable"><thead>
-<tr><th>Όνομα</th><th>Stock</th><th>Min</th><th></th></tr>
-</thead><tbody></tbody></table>
+
+<table id="productsTable">
+<thead>
+<tr><th>Όνομα</th><th>Stock</th><th>Min</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+
 <button onclick="back()">Πίσω</button>
 </div>
 
+<!-- SUPPLIERS -->
 <div id="suppliers" class="page card">
 <h2>Προμηθευτές</h2>
 <input id="sName" placeholder="Όνομα">
 <input id="sEmail" placeholder="Email">
 <button onclick="addSupplier()">Αποθήκευση</button>
-<table id="suppliersTable"><thead>
+
+<table id="suppliersTable">
+<thead>
 <tr><th>Όνομα</th><th>Email</th></tr>
-</thead><tbody></tbody></table>
+</thead>
+<tbody></tbody>
+</table>
+
 <button onclick="back()">Πίσω</button>
 </div>
 
+<!-- PRICES -->
 <div id="prices" class="page card">
 <h2>Τιμές ανά προμηθευτή</h2>
 <select id="priceSupplier"></select>
 <select id="priceProduct"></select>
 <input id="priceValue" placeholder="Τιμή">
 <button onclick="addPrice()">Αποθήκευση</button>
-<table id="pricesTable"><thead>
+
+<table id="pricesTable">
+<thead>
 <tr><th>Supplier</th><th>Product</th><th>Price</th></tr>
-</thead><tbody></tbody></table>
+</thead>
+<tbody></tbody>
+</table>
+
 <button onclick="back()">Πίσω</button>
 </div>
 
+<!-- ORDERS -->
 <div id="orders" class="page card">
 <h2>Παραγγελία</h2>
 <select id="orderSupplier"></select>
@@ -76,12 +94,18 @@
 <input id="orderQty" placeholder="Ποσότητα">
 <button onclick="addOrder()">Προσθήκη</button>
 <button onclick="sendEmail()">Email</button>
-<table id="ordersTable"><thead>
+
+<table id="ordersTable">
+<thead>
 <tr><th>Supplier</th><th>Product</th><th>Qty</th></tr>
-</thead><tbody></tbody></table>
+</thead>
+<tbody></tbody>
+</table>
+
 <button onclick="back()">Πίσω</button>
 </div>
 
+<!-- USERS -->
 <div id="users" class="page card">
 <h2>Χρήστες</h2>
 <input id="uEmail" placeholder="Email">
@@ -91,9 +115,14 @@
 <option>staff</option>
 </select>
 <button onclick="addUser()">Αποθήκευση</button>
-<table id="usersTable"><thead>
+
+<table id="usersTable">
+<thead>
 <tr><th>Email</th><th>Role</th></tr>
-</thead><tbody></tbody></table>
+</thead>
+<tbody></tbody>
+</table>
+
 <button onclick="back()">Πίσω</button>
 </div>
 
